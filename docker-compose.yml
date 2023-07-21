@@ -1,0 +1,34 @@
+version: "3"
+
+services:
+    web_market_prod_server:
+        image: nginx:latest
+        container_name: web_market_prod_server
+        build:
+            context: .
+            dockerfile: ./.docker/nginx/Dockerfile
+        restart: unless-stopped
+        volumes:
+            - ./.docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+            - ./:/var/www/html/web_market_prod/
+        ports:
+            - "8081:8081"
+        networks:
+            - internal-network
+
+    web_market_prod:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: web_market_prod
+        image: web_market_prod:latest
+        restart: unless-stopped
+        volumes:
+            - ./:/var/www/html/web_market_prod/
+            - ./storage:/var/www/html/web_market_prod/storage:rw
+            - ./public:/var/www/html/web_market_prod/public:rw
+        networks:
+            - internal-network
+
+networks:
+    internal-network:
